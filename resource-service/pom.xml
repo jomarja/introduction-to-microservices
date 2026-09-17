@@ -5,13 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.epam.microservices</groupId>
-        <artifactId>introduction-to-microservices</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.15</version>
+        <relativePath/>
     </parent>
 
+    <groupId>com.epam.microservices</groupId>
     <artifactId>resource-service</artifactId>
+    <version>1.0.0</version>
     <name>resource-service</name>
+
+    <properties>
+        <java.version>21</java.version>
+        <tika.version>2.9.4</tika.version>
+    </properties>
 
     <dependencies>
         <dependency>

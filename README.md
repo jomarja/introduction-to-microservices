@@ -24,8 +24,8 @@ Two Spring Boot services:
 2. Start each service (separate terminals):
 
    ```
-   mvn -pl song-service spring-boot:run
-   mvn -pl resource-service spring-boot:run
+   cd song-service && mvn spring-boot:run
+   cd resource-service && mvn spring-boot:run
    ```
 
 Schemas are created by Hibernate on startup (`spring.jpa.hibernate.ddl-auto=update`).
