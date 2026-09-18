@@ -9,16 +9,24 @@ Two Spring Boot services:
 
 ## Prerequisites
 
-- Java 21
-- Maven 3.9+
 - Docker
+- Java 21 and Maven 3.9+ (only for running the services locally)
 
-## Run
+## Run everything in Docker
 
-1. Start the databases:
+```
+docker compose up -d --build
+```
+
+Builds both service images from their `Dockerfile`s and starts the four containers.
+Configuration for the containerized environment comes from `.env`.
+
+## Run services locally
+
+1. Start only the databases:
 
    ```
-   docker compose up -d
+   docker compose up -d resource-db song-db
    ```
 
 2. Start each service (separate terminals):
@@ -28,7 +36,12 @@ Two Spring Boot services:
    cd resource-service && mvn spring-boot:run
    ```
 
-Schemas are created by Hibernate on startup (`spring.jpa.hibernate.ddl-auto=update`).
+The services fall back to the `localhost` defaults in `application.properties`, so no profile switching is needed.
+
+## Database schema
+
+Tables are created by the SQL scripts in `init-scripts/` when a database container starts for the first time.
+Hibernate schema generation is disabled (`spring.jpa.hibernate.ddl-auto=none`). Data is not persisted between restarts.
 
 ## API
 
