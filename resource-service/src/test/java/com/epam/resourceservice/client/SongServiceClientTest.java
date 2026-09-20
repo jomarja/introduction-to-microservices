@@ -20,7 +20,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class SongServiceClientTest {
 
-    private static final String BASE_URL = "http://song-service:8081";
+    private static final String BASE_URL = "http://song-service";
     private static final Mp3Tags TAGS = new Mp3Tags("Test Song", "Test Artist", "Test Album", "00:07", "2025");
 
     private MockRestServiceServer server;

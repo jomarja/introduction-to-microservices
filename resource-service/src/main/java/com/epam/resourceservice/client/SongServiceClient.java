@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 /**
  * Sends song metadata changes to the Song Service.
  * <p>
+ * The base URL is a Eureka service id; the load-balanced {@code RestClient.Builder} resolves it
+ * to one of the registered instances per request.
+ * <p>
  * Failures are logged and do not break the resource operation: the resource itself is already
  * stored (or removed), and metadata consistency is not guaranteed synchronously in this module.
  */

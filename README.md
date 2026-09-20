@@ -1,11 +1,21 @@
 # Introduction to Microservices
 
-Two Spring Boot services:
+Three Spring Boot applications:
 
-| Service            | Port | Database                        | Responsibility                                     |
-|--------------------|------|---------------------------------|----------------------------------------------------|
+| Application        | Port | Database                        | Responsibility                                      |
+|--------------------|------|---------------------------------|-----------------------------------------------------|
+| `eureka-server`    | 8761 | —                               | Service registry and discovery                      |
 | `resource-service` | 8080 | `resource-db` (localhost:5432)  | Stores MP3 files, extracts tags, calls Song Service |
 | `song-service`     | 8081 | `song-db` (localhost:5433)      | Stores song metadata                                |
+
+## Service discovery
+
+Both services register with Eureka on startup. Resource Service never uses a Song Service host name:
+it calls `http://song-service` through a load-balanced `RestClient`, so requests are spread over the
+registered instances. The registry dashboard is at http://localhost:8761.
+
+The registry URL comes from `EUREKA_SERVER_URL` and falls back to `http://localhost:8761/eureka/`,
+which is why the same build works locally and in Docker Compose.
 
 ## Prerequisites
 
@@ -15,11 +25,29 @@ Two Spring Boot services:
 ## Run everything in Docker
 
 ```
+docker compose down
 docker compose up -d --build
 ```
 
-Builds both service images from their `Dockerfile`s and starts the four containers.
-Configuration for the containerized environment comes from `.env`.
+Builds the three images from their `Dockerfile`s and starts the containers, with two Song Service
+replicas (`deploy.replicas`) published on host ports 8081 and 8082. Configuration for the
+containerized environment comes from `.env`.
+
+Verify:
+
+```
+docker ps
+docker compose logs -f resource-service song-service
+```
+
+Then open http://localhost:8761 and check that one `RESOURCE-SERVICE` and two `SONG-SERVICE`
+instances are registered.
+
+Scaling with dynamic host ports works too, but then Postman needs the port shown by `docker ps`:
+
+```
+docker compose up -d --build --scale song-service=2
+```
 
 ## Run services locally
 
@@ -29,14 +57,16 @@ Configuration for the containerized environment comes from `.env`.
    docker compose up -d resource-db song-db
    ```
 
-2. Start each service (separate terminals):
+2. Start the registry and the services (separate terminals, registry first):
 
    ```
+   cd eureka-server && mvn spring-boot:run
    cd song-service && mvn spring-boot:run
    cd resource-service && mvn spring-boot:run
    ```
 
-The services fall back to the `localhost` defaults in `application.properties`, so no profile switching is needed.
+The applications fall back to the `localhost` defaults in `application.properties`, so no profile
+switching is needed.
 
 ## Database schema
 
@@ -62,4 +92,4 @@ Song Service:
 Set the collection variables to:
 
 - `resource_service_url` = `http://localhost:8080`
-- `song_service_url` = `http://localhost:8081`
+- `song_service_url` = `http://localhost:8081` (or `:8082` to hit the second Song Service replica)
